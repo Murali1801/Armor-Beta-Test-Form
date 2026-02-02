@@ -25,12 +25,20 @@
         --font-text: "Stack Sans Text", "Stack Sans Notch", sans-serif;
     }
 
+    html,
+    body {
+        overscroll-behavior: none;
+        height: 100%;
+        width: 100%;
+        overflow: hidden;
+    }
+
     body {
         font-family: var(--font-text);
         background-color: var(--bg-white);
         color: var(--primary-black);
-        overflow: hidden;
         margin: 0;
+        touch-action: none;
     }
 
     /* Custom Scrollbar */
@@ -197,9 +205,8 @@
             /* Reduced from 15vh */
             padding-bottom: 100px;
             /* Space for nav buttons */
-            overflow-y: auto;
-            /* Enable scroll if content is long */
-            -webkit-overflow-scrolling: touch;
+            overflow-y: hidden;
+            touch-action: none;
         }
 
         .input-underline {
