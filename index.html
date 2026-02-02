@@ -828,7 +828,7 @@
 
         try {
             // Call your new Vercel API endpoint
-            const response = await fetch('/api/submit', {
+            const response = await fetch('https://armor-beta-test-form.vercel.app/api/submit', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(answers)
@@ -865,6 +865,7 @@
     window.selectOption = selectOption;
     window.toggleMulti = toggleMulti;
     window.handleEnter = handleEnter;
+    window.finishForm = finishForm;
 
     // Initial State
     scrollToSlide(0);

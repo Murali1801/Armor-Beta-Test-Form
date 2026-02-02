@@ -24,21 +24,42 @@ export default async function handler(req, res) {
         return res.status(200).end();
     }
 
+    console.log("--- New API Request ---");
+    console.log("Method:", req.method);
+
+    // Log env variable presence (not values for security)
+    console.log("Env Check:", {
+        projectId: !!process.env.VITE_FIREBASE_PROJECT_ID,
+        apiKey: !!process.env.VITE_FIREBASE_API_KEY
+    });
+
     if (req.method !== 'POST') {
+        console.warn("Invalid method:", req.method);
         return res.status(405).json({ error: 'Method not allowed' });
     }
 
     try {
         const data = req.body;
+        console.log("Payload Received:", JSON.stringify(data));
+
         const docRef = await addDoc(collection(db, "submissions"), {
             ...data,
             submittedAt: serverTimestamp(),
             source: 'shopify-site'
         });
 
+        console.log("SUCCESS! Doc ID:", docRef.id);
         return res.status(200).json({ success: true, id: docRef.id });
     } catch (error) {
-        console.error("API Error:", error);
-        return res.status(500).json({ success: false, error: error.message });
+        console.error("CRITICAL API ERROR:");
+        console.error("Message:", error.message);
+        console.error("Code:", error.code);
+        console.error("Stack:", error.stack);
+
+        return res.status(500).json({
+            success: false,
+            error: error.message,
+            code: error.code
+        });
     }
 }
