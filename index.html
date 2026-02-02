@@ -644,7 +644,7 @@
 <!-- Progress Bar Container will be moved inside main -->
 
 <script type="module">
-    import { saveFormSubmission } from "./firestore-service.js";
+    // State
 
     // State
     let currentSlide = 0;
@@ -826,12 +826,22 @@
         // Show success screen immediately for better UX
         scrollToSlide(10);
 
-        // Save to Firestore in background
-        const result = await saveFormSubmission(answers);
-        if (result.success) {
-            console.log("Data saved successfully to Firestore.");
-        } else {
-            console.error("Firestore save failed:", result.error);
+        try {
+            // Call your new Vercel API endpoint
+            const response = await fetch('/api/submit', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(answers)
+            });
+
+            const result = await response.json();
+            if (result.success) {
+                console.log("Saved via API! ID:", result.id);
+            } else {
+                console.error("API save failed:", result.error);
+            }
+        } catch (error) {
+            console.error("Network error:", error);
         }
     }
 
