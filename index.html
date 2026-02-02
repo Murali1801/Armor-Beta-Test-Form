@@ -868,6 +868,20 @@
     window.finishForm = finishForm;
 
     // Initial State
-    scrollToSlide(0);
+    function init() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const emailParam = urlParams.get('email');
+        if (emailParam) {
+            const emailInput = document.getElementById('input-email');
+            if (emailInput) {
+                emailInput.value = emailParam;
+                answers.q0_email = emailParam;
+                console.log("Autofilled email from URL:", emailParam);
+            }
+        }
+        scrollToSlide(0);
+    }
+
+    init();
 
 </script>
