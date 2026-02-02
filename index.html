@@ -1,0 +1,862 @@
+<!-- Fonts: Stack Sans Notch variants -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Stack+Sans+Notch:wght@200..700&display=swap" rel="stylesheet">
+<link
+    href="https://fonts.googleapis.com/css2?family=Stack+Sans+Headline:wght@400;600;700&family=Stack+Sans+Text:wght@300;400;500&display=swap"
+    rel="stylesheet">
+
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com"></script>
+
+<!-- FontAwesome for Icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+    /* --- Minimal Typeform Configuration --- */
+    :root {
+        --primary-black: #000000;
+        --text-grey: #666666;
+        --border-grey: #e2e8f0;
+        --bg-white: #FFFFFF;
+        --accent-blue: #0077ff;
+        /* A classic Typeform-like blue for accents */
+        --font-headline: "Stack Sans Headline", "Stack Sans Notch", sans-serif;
+        --font-text: "Stack Sans Text", "Stack Sans Notch", sans-serif;
+    }
+
+    body {
+        font-family: var(--font-text);
+        background-color: var(--bg-white);
+        color: var(--primary-black);
+        overflow: hidden;
+        margin: 0;
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+        width: 4px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: #ddd;
+        border-radius: 2px;
+    }
+
+    /* --- Animations --- */
+    .slide-container {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+    }
+
+    .question-card {
+        height: 100vh;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 40px 24px;
+        opacity: 0;
+        transform: translateY(20px);
+        transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1), transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        pointer-events: none;
+        box-sizing: border-box;
+    }
+
+    .question-card.active {
+        opacity: 1;
+        transform: translateY(0);
+        pointer-events: auto;
+    }
+
+    /* Input Styling */
+    .input-underline {
+        border: none;
+        border-bottom: 1px solid var(--border-grey);
+        background: transparent;
+        font-size: 1.75rem;
+        padding: 12px 0;
+        width: 100%;
+        max-width: 600px;
+        color: var(--primary-black);
+        outline: none;
+        transition: border-color 0.3s;
+    }
+
+    .input-underline:focus {
+        border-bottom-color: var(--primary-black);
+    }
+
+    .input-underline::placeholder {
+        color: #cbd5e1;
+    }
+
+    /* Option Cards */
+    .option-card {
+        border: 1px solid var(--border-grey);
+        background: white;
+        transition: all 0.2s ease;
+        cursor: pointer;
+        padding: 16px 20px;
+        border-radius: 4px;
+        width: 100%;
+        max-width: 500px;
+    }
+
+    .option-card:hover {
+        border-color: #cbd5e1;
+        background-color: #fcfcfc;
+    }
+
+    .option-card.selected {
+        border-color: var(--primary-black);
+        background-color: #f8fafc;
+        border-width: 2px;
+        padding: 15px 19px;
+        /* Offset for border width change */
+    }
+
+    .option-key {
+        border: 1px solid var(--border-grey);
+        color: var(--text-grey);
+        width: 24px;
+        height: 24px;
+        border-radius: 2px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 11px;
+        font-weight: 600;
+    }
+
+    .option-card.selected .option-key {
+        background: var(--primary-black);
+        border-color: var(--primary-black);
+        color: white;
+    }
+
+    /* Navigation Buttons */
+    .nav-btn {
+        background-color: var(--primary-black);
+        color: white;
+        border-radius: 4px;
+        padding: 10px 20px;
+        font-weight: 600;
+        transition: opacity 0.3s, transform 0.1s;
+    }
+
+    .nav-btn:hover {
+        opacity: 0.8;
+    }
+
+    .nav-btn:active {
+        transform: scale(0.98);
+    }
+
+    .nav-btn:disabled {
+        background-color: #f1f5f9;
+        color: #94a3b8;
+        cursor: not-allowed;
+    }
+
+    /* Progress Bar */
+    .progress-fill {
+        background-color: var(--primary-black);
+        transition: width 0.4s ease;
+    }
+
+    /* Typography */
+    .question-text {
+        font-family: var(--font-headline);
+    }
+
+    h1 {
+        font-family: var(--font-headline);
+    }
+
+    /* Mobile Adjustments */
+    @media (max-width: 640px) {
+        .question-card {
+            justify-content: flex-start;
+            padding-top: 60px;
+            /* Reduced from 15vh */
+            padding-bottom: 100px;
+            /* Space for nav buttons */
+            overflow-y: auto;
+            /* Enable scroll if content is long */
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .input-underline {
+            font-size: 1.4rem;
+        }
+
+        .question-text {
+            font-size: 1.4rem;
+            /* Slightly smaller */
+            line-height: 1.3;
+        }
+
+        .option-card {
+            padding: 12px 16px;
+        }
+
+        .option-card.selected {
+            padding: 11px 15px;
+        }
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes shake {
+
+        0%,
+        100% {
+            transform: translateX(0);
+        }
+
+        25% {
+            transform: translateX(-5px);
+        }
+
+        75% {
+            transform: translateX(5px);
+        }
+    }
+
+    .shake {
+        animation: shake 0.3s ease-in-out;
+    }
+
+    .invalid-input {
+        border-color: #ef4444 !important;
+        color: #ef4444 !important;
+    }
+</style>
+
+<!-- Progress Bar Container will be moved to bottom of body -->
+
+<!-- Main Content Container -->
+<main id="main-container" class="relative w-full h-screen overflow-hidden">
+
+    <!-- Progress Bar and Nav will be moved to a consolidated bottom bar -->
+
+    <!-- --- START SCREEN (Slide 0) --- -->
+    <div class="question-card absolute top-0 left-0 active" data-index="0" id="slide-0">
+        <div class="max-w-2xl w-full text-left px-6">
+            <h1 class="text-3xl md:text-5xl font-normal text-gray-900 mb-6 leading-tight">
+                Let's find your gaming identity.
+            </h1>
+            <p class="text-lg text-gray-500 mb-10">
+                To begin, please enter your email address.
+            </p>
+
+            <div class="relative group max-w-lg mb-8">
+                <input type="email" id="input-email" class="input-underline" placeholder="name@example.com"
+                    onkeydown="handleEnter(event)">
+                <div id="error-email" class="text-red-500 text-xs mt-2 opacity-0 transition-opacity">Please enter a
+                    valid email</div>
+            </div>
+
+            <div class="flex items-center gap-4">
+                <button onclick="nextSlide()" class="nav-btn flex items-center gap-2">
+                    OK <i class="fa-solid fa-check text-xs"></i>
+                </button>
+                <span class="text-xs text-gray-400 hidden sm:block">press <strong>Enter ↵</strong></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- --- SECTION 1: ABOUT YOU --- -->
+
+    <!-- Q1: Age -->
+    <div class="question-card absolute top-0 left-0" data-index="1" data-type="mcq">
+        <div class="max-w-2xl w-full px-6 text-left">
+            <div class="flex items-center gap-2 mb-4 text-gray-400 text-xs font-semibold uppercase tracking-wider">
+                <span>1 <i class="fa-solid fa-arrow-right text-[10px] mx-1"></i> About You</span>
+            </div>
+            <h2 class="question-text text-2xl md:text-3xl font-medium text-gray-900 mb-2">How old are you?</h2>
+            <p class="text-gray-400 text-sm mb-8">Helps us map usage intensity.</p>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-2 w-full max-w-2xl">
+                <div class="option-card flex items-center gap-3" onclick="selectOption(1, 'Under 16')">
+                    <span class="option-key">A</span>
+                    <span class="text-lg">Under 16</span>
+                </div>
+                <div class="option-card flex items-center gap-3" onclick="selectOption(1, '16–18')">
+                    <span class="option-key">B</span>
+                    <span class="text-lg">16–18</span>
+                </div>
+                <div class="option-card flex items-center gap-3" onclick="selectOption(1, '19–22')">
+                    <span class="option-key">C</span>
+                    <span class="text-lg">19–22</span>
+                </div>
+                <div class="option-card flex items-center gap-3" onclick="selectOption(1, '23–26')">
+                    <span class="option-key">D</span>
+                    <span class="text-lg">23–26</span>
+                </div>
+                <div class="option-card flex items-center gap-3" onclick="selectOption(1, '27–30')">
+                    <span class="option-key">E</span>
+                    <span class="text-lg">27–30</span>
+                </div>
+                <div class="option-card flex items-center gap-3" onclick="selectOption(1, '31+')">
+                    <span class="option-key">F</span>
+                    <span class="text-lg">31+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Q2: Identity -->
+    <div class="question-card absolute top-0 left-0" data-index="2" data-type="mcq">
+        <div class="max-w-2xl w-full px-6 text-left">
+            <div class="flex items-center gap-2 mb-4 text-gray-400 text-xs font-semibold uppercase tracking-wider">
+                <span>2 <i class="fa-solid fa-arrow-right text-[10px] mx-1"></i> About You</span>
+            </div>
+            <h2 class="question-text text-2xl md:text-3xl font-medium text-gray-900 mb-8">How do you identify?</h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-2 w-full max-w-2xl">
+                <div class="option-card flex items-center gap-3" onclick="selectOption(2, 'Male')">
+                    <span class="option-key">A</span>
+                    <span class="text-lg">Male</span>
+                </div>
+                <div class="option-card flex items-center gap-3" onclick="selectOption(2, 'Female')">
+                    <span class="option-key">B</span>
+                    <span class="text-lg">Female</span>
+                </div>
+                <div class="option-card flex items-center gap-3" onclick="selectOption(2, 'Non-binary')">
+                    <span class="option-key">C</span>
+                    <span class="text-lg">Non-binary</span>
+                </div>
+                <div class="option-card flex items-center gap-3" onclick="selectOption(2, 'Prefer not to say')">
+                    <span class="option-key">D</span>
+                    <span class="text-lg">Prefer not to say</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Q3: City -->
+    <div class="question-card absolute top-0 left-0" data-index="3" data-type="text">
+        <div class="max-w-2xl w-full px-6 text-left">
+            <div class="flex items-center gap-2 mb-4 text-gray-400 text-xs font-semibold uppercase tracking-wider">
+                <span>3 <i class="fa-solid fa-arrow-right text-[10px] mx-1"></i> Location</span>
+            </div>
+            <h2 class="question-text text-2xl md:text-3xl font-medium text-gray-900 mb-2">Which city are you currently
+                based in?</h2>
+            <p class="text-gray-400 text-sm mb-10">We use this to plan local events.</p>
+
+            <div class="w-full">
+                <input type="text" id="input-city" class="input-underline" placeholder="e.g. Mumbai, Pune, Indore..."
+                    onkeydown="handleEnter(event)">
+                <div class="mt-8 flex items-center gap-4">
+                    <button onclick="nextSlide()" class="nav-btn flex items-center gap-2">
+                        OK <i class="fa-solid fa-check text-xs"></i>
+                    </button>
+                    <span class="text-xs text-gray-400 hidden sm:block">press <strong>Enter ↵</strong></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- --- SECTION 2: GAMING IDENTITY --- -->
+
+    <!-- Q4: Gamer Type -->
+    <div class="question-card absolute top-0 left-0" data-index="4" data-type="mcq">
+        <div class="max-w-2xl w-full px-6 text-left">
+            <div class="flex items-center gap-2 mb-4 text-gray-400 text-xs font-semibold uppercase tracking-wider">
+                <span>4 <i class="fa-solid fa-arrow-right text-[10px] mx-1"></i> Gaming Identity</span>
+            </div>
+            <h2 class="question-text text-2xl md:text-3xl font-medium text-gray-900 mb-8">What kind of gamer do you
+                mostly identify as?</h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-2 w-full max-w-2xl">
+                <div class="option-card flex items-center gap-3" onclick="selectOption(4, 'Mobile gamer')">
+                    <span class="option-key">A</span>
+                    <span class="text-lg">Mobile Gamer</span>
+                </div>
+                <div class="option-card flex items-center gap-3" onclick="selectOption(4, 'PC gamer')">
+                    <span class="option-key">B</span>
+                    <span class="text-lg">PC Gamer</span>
+                </div>
+                <div class="option-card flex items-center gap-3" onclick="selectOption(4, 'Console gamer')">
+                    <span class="option-key">C</span>
+                    <span class="text-lg">Console Gamer</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Q5: Frequency -->
+    <div class="question-card absolute top-0 left-0" data-index="5" data-type="mcq">
+        <div class="max-w-2xl w-full px-6 text-left">
+            <div class="flex items-center gap-2 mb-4 text-gray-400 text-xs font-semibold uppercase tracking-wider">
+                <span>5 <i class="fa-solid fa-arrow-right text-[10px] mx-1"></i> Habits</span>
+            </div>
+            <h2 class="question-text text-2xl md:text-3xl font-medium text-gray-900 mb-8">How often do you play games?
+            </h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-2 w-full max-w-2xl">
+                <div class="option-card flex items-center gap-3" onclick="selectOption(5, 'Almost every day')">
+                    <span class="option-key">A</span>
+                    <span class="text-lg">Almost every day</span>
+                </div>
+                <div class="option-card flex items-center gap-3" onclick="selectOption(5, '4–5 days a week')">
+                    <span class="option-key">B</span>
+                    <span class="text-lg">4–5 days a week</span>
+                </div>
+                <div class="option-card flex items-center gap-3" onclick="selectOption(5, '2–3 days a week')">
+                    <span class="option-key">C</span>
+                    <span class="text-lg">2–3 days a week</span>
+                </div>
+                <div class="option-card flex items-center gap-3" onclick="selectOption(5, 'Only on weekends')">
+                    <span class="option-key">D</span>
+                    <span class="text-lg">Only on weekends</span>
+                </div>
+                <div class="option-card flex items-center gap-3" onclick="selectOption(5, 'Rarely')">
+                    <span class="option-key">E</span>
+                    <span class="text-lg">Rarely, when I get time</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- --- SECTION 3: GEAR + SPENDING --- -->
+
+    <!-- Q6: Expensive Item -->
+    <div class="question-card absolute top-0 left-0" data-index="6" data-type="mcq">
+        <div class="max-w-2xl w-full px-6 text-left">
+            <div class="flex items-center gap-2 mb-4 text-gray-400 text-xs font-semibold uppercase tracking-wider">
+                <span>6 <i class="fa-solid fa-arrow-right text-[10px] mx-1"></i> Gear & Spending</span>
+            </div>
+            <h2 class="question-text text-2xl md:text-3xl font-medium text-gray-900 mb-8">What is the most expensive
+                gaming-related item you own?</h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-2 w-full max-w-2xl">
+                <div class="option-card flex items-center gap-3" onclick="selectOption(6, 'Under ₹1,000')">
+                    <span class="option-key">A</span>
+                    <span class="text-lg">Under ₹1,000</span>
+                </div>
+                <div class="option-card flex items-center gap-3" onclick="selectOption(6, '₹1,000 – ₹3,000')">
+                    <span class="option-key">B</span>
+                    <span class="text-lg">₹1,000 – ₹3,000</span>
+                </div>
+                <div class="option-card flex items-center gap-3" onclick="selectOption(6, '₹3,000 – ₹7,000')">
+                    <span class="option-key">C</span>
+                    <span class="text-lg">₹3,000 – ₹7,000</span>
+                </div>
+                <div class="option-card flex items-center gap-3" onclick="selectOption(6, '₹7,000 – ₹15,000')">
+                    <span class="option-key">D</span>
+                    <span class="text-lg">₹7,000 – ₹15,000</span>
+                </div>
+                <div class="option-card flex items-center gap-3" onclick="selectOption(6, '₹15,000+')">
+                    <span class="option-key">E</span>
+                    <span class="text-lg">₹15,000+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Q7: Priority -->
+    <div class="question-card absolute top-0 left-0" data-index="7" data-type="mcq">
+        <div class="max-w-2xl w-full px-6 text-left">
+            <div class="flex items-center gap-2 mb-4 text-gray-400 text-xs font-semibold uppercase tracking-wider">
+                <span>7 <i class="fa-solid fa-arrow-right text-[10px] mx-1"></i> Preferences</span>
+            </div>
+            <h2 class="question-text text-2xl md:text-3xl font-medium text-gray-900 mb-8">When buying gaming gear, which
+                matters MOST to you?</h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-2 w-full max-w-2xl">
+                <div class="option-card flex items-center gap-3" onclick="selectOption(7, 'Price')">
+                    <span class="option-key">A</span>
+                    <span class="text-lg">Price</span>
+                </div>
+                <div class="option-card flex items-center gap-3" onclick="selectOption(7, 'Comfort')">
+                    <span class="option-key">B</span>
+                    <span class="text-lg">Comfort</span>
+                </div>
+                <div class="option-card flex items-center gap-3" onclick="selectOption(7, 'Performance')">
+                    <span class="option-key">C</span>
+                    <span class="text-lg">Performance</span>
+                </div>
+                <div class="option-card flex items-center gap-3" onclick="selectOption(7, 'Design / Looks')">
+                    <span class="option-key">D</span>
+                    <span class="text-lg">Design / Looks</span>
+                </div>
+                <div class="option-card flex items-center gap-3" onclick="selectOption(7, 'Brand Trust')">
+                    <span class="option-key">E</span>
+                    <span class="text-lg">Brand Trust</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- --- SECTION 4: ARMOR INNER CIRCLE --- -->
+
+    <!-- Q8: Beta Test -->
+    <div class="question-card absolute top-0 left-0" data-index="8" data-type="mcq">
+        <div class="max-w-2xl w-full px-6 text-left">
+            <div class="flex items-center gap-2 mb-4 text-gray-400 text-xs font-semibold uppercase tracking-wider">
+                <span>8 <i class="fa-solid fa-arrow-right text-[10px] mx-1"></i> Armor Inner Circle</span>
+            </div>
+            <h2 class="question-text text-2xl md:text-3xl font-medium text-gray-900 mb-8">Would you like to help Armor
+                by testing products before launch?</h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-2 w-full max-w-2xl">
+                <div class="option-card flex items-center gap-3" onclick="selectOption(8, 'Yes')">
+                    <span class="option-key">A</span>
+                    <div class="flex flex-col">
+                        <span class="text-lg leading-tight">Yes, I’m interested!</span>
+                        <span class="text-xs text-gray-400">I want early access to beta testing.</span>
+                    </div>
+                </div>
+                <div class="option-card flex items-center gap-3" onclick="selectOption(8, 'Maybe')">
+                    <span class="option-key">B</span>
+                    <div class="flex flex-col">
+                        <span class="text-lg leading-tight">Maybe</span>
+                        <span class="text-xs text-gray-400">Depends on the product.</span>
+                    </div>
+                </div>
+                <div class="option-card flex items-center gap-3" onclick="selectOption(8, 'No')">
+                    <span class="option-key">C</span>
+                    <div class="flex flex-col">
+                        <span class="text-lg leading-tight">No thanks</span>
+                        <span class="text-xs text-gray-400">Just here for updates.</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Q9: Participation (Multi-Select) -->
+    <div class="question-card absolute top-0 left-0" data-index="9" data-type="multi">
+        <div class="max-w-2xl w-full px-6 text-left">
+            <div class="flex items-center gap-2 mb-4 text-gray-400 text-xs font-semibold uppercase tracking-wider">
+                <span>9 <i class="fa-solid fa-arrow-right text-[10px] mx-1"></i> Collaboration</span>
+            </div>
+            <h2 class="question-text text-2xl md:text-3xl font-medium text-gray-900 mb-2">How would you prefer to
+                participate?</h2>
+            <p class="text-gray-400 text-sm mb-8">Select all that apply.</p>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-2 w-full max-w-2xl" id="multi-options-9">
+                <div class="option-card flex items-center gap-3 group" onclick="toggleMulti(this, 'Online surveys')">
+                    <div
+                        class="w-5 h-5 rounded border border-gray-300 flex items-center justify-center check-box transition-colors">
+                        <i class="fa-solid fa-check text-white text-[10px] opacity-0"></i>
+                    </div>
+                    <span class="text-lg">Online surveys</span>
+                </div>
+                <div class="option-card flex items-center gap-3 group" onclick="toggleMulti(this, 'Video calls')">
+                    <div
+                        class="w-5 h-5 rounded border border-gray-300 flex items-center justify-center check-box transition-colors">
+                        <i class="fa-solid fa-check text-white text-[10px] opacity-0"></i>
+                    </div>
+                    <span class="text-lg">Video calls / interviews</span>
+                </div>
+                <div class="option-card flex items-center gap-3 group"
+                    onclick="toggleMulti(this, 'In-person sessions')">
+                    <div
+                        class="w-5 h-5 rounded border border-gray-300 flex items-center justify-center check-box transition-colors">
+                        <i class="fa-solid fa-check text-white text-[10px] opacity-0"></i>
+                    </div>
+                    <span class="text-lg">In-person (Mumbai)</span>
+                </div>
+                <div class="option-card flex items-center gap-3 group" onclick="toggleMulti(this, 'WhatsApp groups')">
+                    <div
+                        class="w-5 h-5 rounded border border-gray-300 flex items-center justify-center check-box transition-colors">
+                        <i class="fa-solid fa-check text-white text-[10px] opacity-0"></i>
+                    </div>
+                    <span class="text-lg">WhatsApp feedback groups</span>
+                </div>
+            </div>
+
+            <div class="mt-8 flex items-center gap-4">
+                <button onclick="finishForm()" class="nav-btn flex items-center gap-2">
+                    Submit <i class="fa-solid fa-paper-plane text-xs"></i>
+                </button>
+                <span class="text-xs text-gray-400 hidden sm:block">press <strong>Enter ↵</strong></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- --- SUCCESS SCREEN --- -->
+    <div class="question-card absolute top-0 left-0" data-index="10" id="slide-success">
+        <div class="max-w-xl w-full text-left px-6">
+            <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-8">
+                <i class="fa-solid fa-check text-2xl text-gray-900"></i>
+            </div>
+            <h1 class="text-3xl font-medium text-gray-900 mb-4">You're in!</h1>
+            <p class="text-lg text-gray-500 mb-8">
+                Thanks for helping us build the future of Armor.
+            </p>
+            <button onclick="location.reload()"
+                class="text-sm text-gray-400 hover:text-black underline transition-colors">
+                Start a new response
+            </button>
+        </div>
+    </div>
+
+    <!-- Progress & Nav Bar (Consolidated for guaranteed visibility) -->
+    <div id="progress-container"
+        class="fixed bottom-0 left-0 w-full bg-white/90 backdrop-blur-md border-t border-gray-100 z-[100] px-6 py-4 md:py-6 flex items-center justify-between">
+        <div class="flex flex-col gap-2 md:gap-3">
+            <span id="progress-indicator"
+                class="text-[10px] md:text-sm font-bold text-black uppercase tracking-widest"></span>
+            <div class="w-32 sm:w-64 md:w-[400px] h-1 md:h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                <div id="progress-bar" class="h-full bg-black transition-all duration-500 ease-out" style="width: 0%;">
+                </div>
+            </div>
+        </div>
+
+        <div class="flex gap-2">
+            <button onclick="prevSlide()" id="btn-prev"
+                class="w-10 h-10 rounded border border-gray-200 text-gray-500 flex items-center justify-center hover:bg-gray-50 disabled:opacity-20 disabled:cursor-not-allowed transition-all">
+                <i class="fa-solid fa-chevron-up text-xs"></i>
+            </button>
+            <button onclick="nextSlide()" id="btn-next"
+                class="w-10 h-10 rounded border border-gray-200 text-gray-500 flex items-center justify-center hover:bg-gray-50 transition-all">
+                <i class="fa-solid fa-chevron-down text-xs"></i>
+            </button>
+        </div>
+    </div>
+
+</main>
+
+<!-- Progress Bar Container will be moved inside main -->
+
+<script type="module">
+    import { saveFormSubmission } from "./firestore-service.js";
+
+    // State
+    let currentSlide = 0;
+    const totalSlides = 11; // 0 to 9 + success (index 10)
+    let answers = {
+        q0_email: '',
+        q1_age: '',
+        q2_gender: '',
+        q3_city: '',
+        q4_gamer_type: '',
+        q5_frequency: '',
+        q6_expensive_item: '',
+        q7_buying_priority: '',
+        q8_testing: '',
+        q9_participation: []
+    };
+
+    // DOM Elements
+    const slides = document.querySelectorAll('.question-card');
+    const progressBar = document.getElementById('progress-bar');
+    const btnPrev = document.getElementById('btn-prev');
+    const btnNext = document.getElementById('btn-next');
+
+    function updateUI() {
+        const pBar = document.getElementById('progress-bar');
+        const pContainer = document.getElementById('progress-container');
+        const pIndicator = document.getElementById('progress-indicator');
+        const bPrev = document.getElementById('btn-prev');
+        const bNext = document.getElementById('btn-next');
+
+        const progress = (currentSlide / 9) * 100;
+        if (pBar) pBar.style.width = `${Math.min(progress, 100)}%`;
+
+        if (pIndicator) {
+            if (currentSlide === 0) {
+                pIndicator.innerText = "Getting Started";
+            } else {
+                pIndicator.innerText = `${currentSlide} of 9 questions completed`;
+            }
+        }
+
+        if (bPrev) bPrev.disabled = currentSlide === 0;
+
+        if (currentSlide === 10) {
+            if (pContainer) pContainer.style.display = 'none';
+        } else {
+            if (pContainer) pContainer.style.display = 'flex';
+        }
+    }
+
+    function scrollToSlide(index) {
+        if (index < 0 || index >= totalSlides) return;
+
+        slides.forEach((slide, i) => {
+            slide.classList.remove('active');
+            slide.style.opacity = '0';
+            slide.style.pointerEvents = 'none';
+
+            if (i === index) {
+                slide.classList.add('active');
+                slide.style.transform = 'translateY(0) scale(1)';
+                slide.style.opacity = '1';
+                slide.style.pointerEvents = 'auto';
+
+                const input = slide.querySelector('input');
+                if (input) setTimeout(() => input.focus(), 600);
+            } else if (i < index) {
+                slide.style.transform = 'translateY(-100px) scale(0.95)';
+            } else {
+                slide.style.transform = 'translateY(100px) scale(0.95)';
+            }
+        });
+
+        currentSlide = index;
+        updateUI();
+    }
+
+    function validateCurrentSlide() {
+        const activeSlide = document.querySelector('.question-card.active');
+        let isValid = false;
+
+        if (currentSlide === 0) {
+            const input = activeSlide.querySelector('#input-email');
+            const val = input.value.trim();
+            isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val);
+            if (isValid) {
+                answers.q0_email = val;
+                document.getElementById('error-email').style.opacity = '0';
+            } else {
+                input.classList.add('invalid-input');
+                document.getElementById('error-email').style.opacity = '1';
+                setTimeout(() => input.classList.remove('invalid-input'), 500);
+            }
+        }
+        else if (currentSlide === 1) isValid = !!answers.q1_age;
+        else if (currentSlide === 2) isValid = !!answers.q2_gender;
+        else if (currentSlide === 3) {
+            const input = activeSlide.querySelector('#input-city');
+            const val = input.value.trim();
+            isValid = val.length > 0;
+            if (isValid) answers.q3_city = val;
+            else {
+                input.classList.add('invalid-input');
+                setTimeout(() => input.classList.remove('invalid-input'), 500);
+            }
+        }
+        else if (currentSlide === 4) isValid = !!answers.q4_gamer_type;
+        else if (currentSlide === 5) isValid = !!answers.q5_frequency;
+        else if (currentSlide === 6) isValid = !!answers.q6_expensive_item;
+        else if (currentSlide === 7) isValid = !!answers.q7_buying_priority;
+        else if (currentSlide === 8) isValid = !!answers.q8_testing;
+        else if (currentSlide === 9) isValid = answers.q9_participation.length > 0;
+
+        if (!isValid) {
+            activeSlide.classList.add('shake');
+            setTimeout(() => activeSlide.classList.remove('shake'), 400);
+        }
+        return isValid;
+    }
+
+    function nextSlide() {
+        if (validateCurrentSlide()) {
+            if (currentSlide === 9) {
+                finishForm();
+            } else {
+                scrollToSlide(currentSlide + 1);
+            }
+        }
+    }
+
+    function prevSlide() {
+        if (currentSlide > 0) scrollToSlide(currentSlide - 1);
+    }
+
+    function selectOption(qNum, value) {
+        const keys = {
+            1: 'q1_age',
+            2: 'q2_gender',
+            4: 'q4_gamer_type',
+            5: 'q5_frequency',
+            6: 'q6_expensive_item',
+            7: 'q7_buying_priority',
+            8: 'q8_testing'
+        };
+
+        if (keys[qNum]) answers[keys[qNum]] = value;
+
+        const slide = document.querySelector(`.question-card[data-index="${qNum}"]`);
+        const options = slide.querySelectorAll('.option-card');
+        options.forEach(opt => opt.classList.remove('selected'));
+
+        const clicked = Array.from(options).find(opt => opt.innerText.includes(value));
+        if (clicked) clicked.classList.add('selected');
+
+        setTimeout(() => nextSlide(), 400);
+    }
+
+    function toggleMulti(element, value) {
+        const index = answers.q9_participation.indexOf(value);
+        const checkBox = element.querySelector('.check-box');
+        const checkIcon = checkBox.querySelector('i');
+
+        if (index === -1) {
+            answers.q9_participation.push(value);
+            element.classList.add('selected');
+            checkBox.classList.add('bg-black', 'border-black');
+            checkIcon.classList.remove('opacity-0');
+        } else {
+            answers.q9_participation.splice(index, 1);
+            element.classList.remove('selected');
+            checkBox.classList.remove('bg-black', 'border-black');
+            checkIcon.classList.add('opacity-0');
+        }
+    }
+
+    async function finishForm() {
+        console.log("Submission Data:", answers);
+
+        // Show success screen immediately for better UX
+        scrollToSlide(10);
+
+        // Save to Firestore in background
+        const result = await saveFormSubmission(answers);
+        if (result.success) {
+            console.log("Data saved successfully to Firestore.");
+        } else {
+            console.error("Firestore save failed:", result.error);
+        }
+    }
+
+    function handleEnter(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            nextSlide();
+        }
+    }
+
+    // Keyboard Support
+    document.addEventListener('keydown', (e) => {
+        if (e.target.tagName === 'INPUT') return;
+        if (e.key === 'ArrowDown' || e.key === 'ArrowRight') nextSlide();
+        if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') prevSlide();
+    });
+
+    // Expose functions to window for HTML event handlers
+    window.nextSlide = nextSlide;
+    window.prevSlide = prevSlide;
+    window.selectOption = selectOption;
+    window.toggleMulti = toggleMulti;
+    window.handleEnter = handleEnter;
+
+    // Initial State
+    scrollToSlide(0);
+
+</script>
